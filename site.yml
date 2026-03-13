@@ -1,0 +1,45 @@
+---
+- name: Register Oracle target host from CLI vars
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    oracle_target_name: "{{ oracle_target_name | default('oracle1') }}"
+
+  tasks:
+    - name: Validate required variables
+      assert:
+        that:
+          - target_host_ip is defined
+          - target_root_password is defined
+        fail_msg: "You must pass target_host_ip and target_root_password with -e on the command line."
+
+    - name: Add dynamic Oracle host to oracle_db_servers group
+      add_host:
+        name: "{{ oracle_target_name }}"
+        groups: oracle_db_servers
+        ansible_host: "{{ target_host_ip }}"
+        ansible_user: root
+        ansible_password: "{{ target_root_password }}"
+        ansible_connection: ssh
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+- name: Full Oracle Grid + Database deployment
+  hosts: oracle_db_servers
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - group_vars/oracle_db_servers.yml
+
+  pre_tasks:
+    - name: Ensure Python is present on target (for Ansible)
+      raw: test -e /usr/bin/python3 || (yum -y install python3 || dnf -y install python3)
+      changed_when: false
+      failed_when: false
+
+  roles:
+    - role: oracle_common
+    - role: oracle_grid
+    - role: oracle_db
+

@@ -1,0 +1,52 @@
+---
+- name: Install required OS packages for Oracle on OEL 8.x
+  package:
+    name:
+      - "{{ oracle_preinstall_package }}"
+      - gcc
+      - make
+      - binutils
+      - glibc
+      - libaio
+      - libgcc
+      - libstdc++
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Create Oracle base directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ oracle_user }}"
+    group: "{{ oinstall_group }}"
+  loop:
+    - "{{ oracle_base }}"
+    - "{{ oracle_inventory }}"
+    - "{{ oracle_home }}"
+    - "{{ grid_home }}"
+
+- name: Ensure Oracle and Grid users and groups exist
+  group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid | default(omit) }}"
+    state: present
+  loop:
+    - { name: "{{ oinstall_group }}" }
+    - { name: "{{ dba_group }}" }
+    - { name: "{{ asmadmin_group }}" }
+    - { name: "{{ asmdba_group }}" }
+    - { name: "{{ asmoper_group }}" }
+
+- name: Create users
+  user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    append: yes
+    home: "/home/{{ item.name }}"
+    shell: /bin/bash
+    state: present
+  loop:
+    - { name: "{{ oracle_user }}", groups: "{{ oinstall_group }},{{ dba_group }},{{ asmdba_group }}" }
+    - { name: "{{ grid_user }}", groups: "{{ oinstall_group }},{{ asmadmin_group }},{{ asmdba_group }},{{ asmoper_group }}" }
+

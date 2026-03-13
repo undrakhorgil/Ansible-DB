@@ -1,0 +1,41 @@
+---
+- name: Copy Grid Infrastructure software to target
+  copy:
+    src: "{{ oracle_grid_software_zip }}"
+    dest: "/tmp/grid_software.zip"
+    mode: "0644"
+  delegate_to: localhost
+  run_once: true
+
+- name: Unpack Grid Infrastructure software
+  unarchive:
+    src: "/tmp/grid_software.zip"
+    dest: "{{ grid_home }}"
+    remote_src: yes
+
+- name: Configure ASM disks permissions
+  file:
+    path: "{{ item }}"
+    owner: "{{ grid_user }}"
+    group: "{{ asmadmin_group }}"
+    mode: "0660"
+  loop: "{{ asm_disks }}"
+
+- name: Create Grid response file from template
+  template:
+    src: grid_install.rsp.j2
+    dest: "/tmp/grid_install.rsp"
+    owner: "{{ grid_user }}"
+    group: "{{ oinstall_group }}"
+    mode: "0600"
+
+- name: Run Grid Infrastructure installer (silent)
+  become_user: "{{ grid_user }}"
+  command: >
+    {{ grid_home }}/gridSetup.sh
+    -silent
+    -responseFile /tmp/grid_install.rsp
+    -ignorePrereqFailure
+  args:
+    chdir: "{{ grid_home }}"
+
