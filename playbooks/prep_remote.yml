@@ -1,0 +1,23 @@
+---
+- name: Prep remote nodes
+  hosts: oracle_rac_servers
+  gather_facts: false
+  become: true
+  vars:
+    ansible_user: root
+    ansible_password: "{{ target_root_password }}"
+    ansible_ssh_common_args: >-
+      {{ '' if (oracle_ssh_strict_host_key_checking | default(true) | bool)
+         else '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' }}
+    ansible_python_interpreter: /usr/bin/python3.11
+  tasks:
+    - name: Ensure Python exists
+      ansible.builtin.raw: test -x /usr/bin/python3.11 || (dnf -y install python3.11 || yum -y install python3.11)
+      changed_when: false
+
+    - name: Gather network facts
+      ansible.builtin.setup:
+        gather_subset:
+          - network
+        filter:
+          - ansible_all_ipv4_addresses

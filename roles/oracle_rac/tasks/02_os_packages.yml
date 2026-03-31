@@ -1,0 +1,37 @@
+---
+- name: Install required OS packages from Oracle base flow
+  ansible.builtin.shell: >
+    dnf -y install dnf-utils zip unzip sshpass bc binutils compat-openssl10 elfutils-libelf glibc glibc-devel ksh libaio libXrender libX11 libXau libXi libXtst libgcc libnsl libstdc++ libxcb libibverbs libasan liblsan libubsan make policycoreutils policycoreutils-python-utils smartmontools sysstat libnsl2 libvirt-libs net-tools nfs-utils unixODBC chrony
+  register: pkg_required_out
+
+- name: Install Oracle preinstall package from group_vars
+  ansible.builtin.shell: |
+    set -euo pipefail
+    dnf -y install "{{ oracle_preinstall_package }}"
+  args:
+    executable: /bin/bash
+  register: oracle_preinstall_out
+  changed_when: false
+
+- name: Install optional OS packages when available
+  ansible.builtin.shell: >
+    dnf -y install ipmiutil libnsl2-devel || true
+  register: pkg_optional_out
+  changed_when: false
+
+- name: Disable firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+    enabled: false
+  failed_when: false
+
+- name: Set SELinux permissive
+  ansible.builtin.shell: "sed -i -e 's|SELINUX=enforcing|SELINUX=permissive|g' /etc/selinux/config && setenforce permissive || true"
+  changed_when: false
+
+- name: Enable chronyd
+  ansible.builtin.service:
+    name: chronyd
+    state: started
+    enabled: true

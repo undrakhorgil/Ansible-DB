@@ -1,0 +1,14 @@
+.DS_Store
+**/.DS_Store
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Local Ansible logs
+*.retry
+ansible.log
+
+# Generated report (step 21)
+rac_environment_summary.html
+

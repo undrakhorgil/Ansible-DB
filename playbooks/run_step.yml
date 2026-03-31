@@ -1,0 +1,27 @@
+---
+- import_playbook: bootstrap_rac_inventory.yml
+- import_playbook: prep_remote.yml
+
+- name: Run one step
+  hosts: oracle_rac_servers
+  gather_facts: false
+  become: true
+  any_errors_fatal: true
+  vars:
+    ansible_user: root
+    ansible_password: "{{ target_root_password }}"
+    ansible_ssh_common_args: >-
+      {{ '' if (oracle_ssh_strict_host_key_checking | default(true) | bool)
+         else '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' }}
+    ansible_python_interpreter: /usr/bin/python3.11
+  tasks:
+    - name: Validate rac_step
+      ansible.builtin.assert:
+        that:
+          - rac_step is defined
+          - rac_step | length > 0
+        quiet: true
+    - name: Run selected step
+      ansible.builtin.include_role:
+        name: oracle_rac
+        tasks_from: "{{ rac_step }}"

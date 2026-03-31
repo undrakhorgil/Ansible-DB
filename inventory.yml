@@ -3,7 +3,5 @@ all:
   hosts:
     localhost:
       ansible_connection: local
-
   children:
-    oracle_db_servers: {}
-
+    oracle_rac_servers: {}

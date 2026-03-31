@@ -1,0 +1,18 @@
+---
+- import_playbook: bootstrap_rac_inventory.yml
+- import_playbook: prep_remote.yml
+
+- name: Full run
+  hosts: oracle_rac_servers
+  gather_facts: false
+  become: true
+  any_errors_fatal: true
+  vars:
+    ansible_user: root
+    ansible_password: "{{ target_root_password }}"
+    # Safer default; set oracle_ssh_strict_host_key_checking: false in group_vars to keep old lab behavior.
+    ansible_ssh_common_args: >-
+      {{ '' if (oracle_ssh_strict_host_key_checking | default(true) | bool)
+         else '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' }}
+  roles:
+    - role: oracle_rac
