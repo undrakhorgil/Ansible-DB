@@ -1,5 +1,7 @@
 ## Oracle RAC 26ai Ansible
 
+**Repository:** [https://github.com/undrakhorgil/ansible-db](https://github.com/undrakhorgil/ansible-db)
+
 Step-based Ansible automation for a 2-node (or N-node) Oracle RAC lab: OS prep → GI/CRS → ASM → DB software → DBCA.
 
 ### Quickstart
@@ -18,7 +20,7 @@ ansible-playbook playbooks/site.yml
 ### Project structure
 
 ```text
-ansible-db-create/
+ansible-db/
   ansible.cfg                  # Output/log defaults + callback config
   oradbctl.sh                   # Step/undo runner (bash)
   inventory.yml                 # Base inventory (dynamic hosts added at runtime)
