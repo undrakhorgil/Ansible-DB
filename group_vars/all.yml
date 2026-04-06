@@ -63,8 +63,6 @@ asm_diskgroups:
 
 # gridSetup ASM discovery
 grid_asm_disk_discovery_string: "/dev/oracleasm/*"
-grid_asm_disk_list: ""
-grid_asm_diskgroup_redundancy: EXTERNAL
 asm_wipe_stale_headers: true
 # Increase if headers persist; useless while disk is still in a DG — run undo 15 / drop FRA and stop HAS first.
 asm_wipe_header_mb: 100
@@ -78,14 +76,6 @@ grid_user_password_old: "Welcome1"
 root_user_password_new: "Welcome1"
 oracle_user_password_new: "Welcome1"
 grid_user_password_new: "Welcome1"
-
-# Grid silent install
-oracle_cluvfy_extra_args: ""
-oracle_grid_silent_use_bundled_response_file: true
-oracle_grid_rootconfig_executeRootScript: false
-
-# Output
-oracle_show_cmd_output: false
 
 # oradbctl step 16 — DBCA (single-instance on ASM); task file 16_create_orcl_database.yml
 # Skip entire oraversion/path preflight (debug only).

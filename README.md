@@ -68,7 +68,7 @@ Edit **`group_vars/all.yml`** (and optionally **`group_vars/vault.yml`** for sec
 
 - **`ansible_remote_tmp`**: writable temp for modules (avoids `~/.ansible` permission issues for `oracle`/`grid`).
 - **`asm_wipe_stale_headers`**, **`asm_wipe_header_mb`**: clearing old ASM headers before Grid install (see comments in **`all.yml`** / **`oracle_defaults.yml`**).
-- **`oracle_show_cmd_output`**, Grid/DBCA booleans: verbosity and installer behavior; read inline comments in **`group_vars/all.yml`** before changing.
+- Other Grid/DBCA booleans: read inline comments in **`group_vars/all.yml`** before changing.
 
 ### Run (step / undo)
 

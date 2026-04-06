@@ -43,7 +43,7 @@
     <tr><th>Name</th><th>Host IP (SSH)</th></tr>
     {% for n in oracle_hosts %}
     <tr>
-      <td>{{ n.name }}</td>
+      <td>{{ n.name | default('(hostname from target)') }}</td>
       <td>{{ n.host_ip }}</td>
     </tr>
     {% endfor %}
@@ -77,12 +77,9 @@
 
   <h2>Grid setup</h2>
   <table>
-    <tr><th>Install option</th><td><code>HA_CONFIG</code></td></tr>
-    <tr><th>Use bundled response file</th><td><code>{{ oracle_grid_silent_use_bundled_response_file }}</code></td></tr>
-    <tr><th>Execute root scripts in OUI</th><td><code>{{ oracle_grid_rootconfig_executeRootScript }}</code></td></tr>
+    <tr><th>Install mode</th><td><code>gridSetup.sh -configureStandaloneServer</code> (Oracle Restart)</td></tr>
     <tr><th>ASM disk discovery string</th><td><code>{{ grid_asm_disk_discovery_string }}</code></td></tr>
-    <tr><th>ASM disk list override</th><td><code>{{ grid_asm_disk_list | default('') }}</code></td></tr>
-    <tr><th>CRS DG redundancy</th><td><code>{{ grid_asm_diskgroup_redundancy }}</code></td></tr>
+    <tr><th class="muted">CRS disk list / redundancy</th><td class="muted">Taken from the <code>asm_diskgroups</code> entry with <code>used_for_grid_crs: true</code> (see below).</td></tr>
   </table>
 
   <h2>ASM devices (udev / stable naming)</h2>
